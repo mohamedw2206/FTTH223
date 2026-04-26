@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Home Visit Dispatch - FINAL</title>
+
+<style>
+body { font-family: Arial; background:#f5f5f5; padding:20px; }
+.container { background:#fff; padding:20px; border-radius:10px; max-width:900px; margin:auto; }
+.section { margin-bottom:15px; }
+
+#result {
+  margin-top:20px;
+  padding:15px;
+  border-radius:8px;
+  display:none;
+  font-weight:bold;
+  background:#fff3cd;
+}
+
+#note {
+  margin-top:15px;
+  padding:15px;
+  border-radius:10px;
+  background:#eef7ff;
+  display:none;
+}
+
+button {
+  margin-top:10px;
+  padding:8px 12px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+.copy { background:green; color:#fff; }
+.reset { background:red; color:#fff; }
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h3>Home Visit Dispatch</h3>
+
+<div class="section">
+<label>Home Visit Dispatch</label><br>
+<label><input type="radio" name="dispatch" value="yes"> Yes</label>
+<label><input type="radio" name="dispatch" value="no"> No</label>
+</div>
+
+<div class="section">
+<label>هل تم تجاوز SLA؟</label><br>
+<label><input type="radio" name="sla" value="yes"> Yes</label>
+<label><input type="radio" name="sla" value="no"> No</label>
+</div>
+
+<div class="section">
+<label>Delay Happened?</label><br>
+<label><input type="radio" name="delay" value="yes"> Yes</label>
+<label><input type="radio" name="delay" value="no"> No</label>
+</div>
+
+<div id="result"></div>
+<div id="note"></div>
+
+<button class="copy" onclick="copyResult()">Copy</button>
+<button class="reset" onclick="resetAll()">Reset</button>
+
+</div>
+
+<script>
+
+const inputs = document.querySelectorAll('input');
+inputs.forEach(i => i.addEventListener('change', generate));
+
+function generate() {
+
+  const dispatch = document.querySelector('input[name="dispatch"]:checked')?.value;
+  const sla = document.querySelector('input[name="sla"]:checked')?.value;
+  const delay = document.querySelector('input[name="delay"]:checked')?.value;
+
+  const result = document.getElementById("result");
+  const note = document.getElementById("note");
+
+  if (!dispatch || !sla || !delay) return;
+
+  let message = "";
+  let noteText = "";
+
+  // 🔴 Delay Priority
+  if (delay === "yes") {
+    message = "BB Non-Technical Complaint -> Migration - Installation -> FO-Fiber - Delay -> Create";
+
+    noteText = `📌 Delay in Home Visit
+
+📩 Action:
+Activation Follow Up
+
+⏱️ SLA: 4 Hours
+
+📌 Status:
+Waiting for action - Activation Team`;
+  }
+
+  // 🟢 Home Visit SR
+  else if (dispatch === "yes") {
+
+    if (sla === "no") {
+      message = "FBB Non Tech follow up -> FTTH Migration -> Home Visit within SLA -> Create (خلال)";
+    } else {
+      message = "FBB Non Tech follow up -> FTTH Migration -> Home Visit After SLA -> Create (بعد)";
+    }
+
+    noteText = `📌 Home Visit Dispatch
+
+📊 SLA:
+2 Days (Major Cities)
+5 Days (Other Areas)
+
+📌 الفني:
+- تركيب ONT
+- تسليم الراوتر
+- تفعيل الخدمة`;
+  }
+
+  else {
+    message = "Pending Home Visit";
+  }
+
+  result.style.display = "block";
+  note.style.display = noteText ? "block" : "none";
+
+  result.innerText = message;
+  note.innerText = noteText;
+}
+
+function copyResult() {
+  const text = document.getElementById("result").innerText;
+  if (!text) return;
+  navigator.clipboard.writeText(text);
+  alert("Copied ✅");
+}
+
+function resetAll() {
+  document.querySelectorAll('input').forEach(i => i.checked = false);
+  document.getElementById("result").style.display = "none";
+  document.getElementById("note").style.display = "none";
+}
+
+</script>
+
+</body>
+</html>

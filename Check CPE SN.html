@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Check CPE SN Tool - FINAL</title>
+
+<style>
+body {font-family: Arial; background:#f5f5f5; padding:20px;}
+.container {background:#fff; padding:20px; border-radius:10px; max-width:850px; margin:auto;}
+.section {margin-bottom:15px;}
+
+#result {
+  margin-top:20px;
+  padding:15px;
+  border-radius:8px;
+  display:none;
+  font-weight:bold;
+  background:#fff3cd;
+}
+
+#note {
+  margin-top:15px;
+  padding:15px;
+  border-radius:10px;
+  background:#eef7ff;
+  display:none;
+}
+
+.step {
+  background:#fff;
+  margin-bottom:10px;
+  padding:10px;
+  border-left:4px solid #007bff;
+}
+
+button {margin-top:10px; padding:8px 12px; border:none; border-radius:6px; cursor:pointer;}
+.copy {background:green; color:white;}
+.reset {background:red; color:white;}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h3>Check CPE SN</h3>
+
+<div class="section">
+<label>Abnormal Status</label><br>
+<label><input type="radio" name="status" value="yes"> Yes (Delay / Abnormal)</label>
+<label><input type="radio" name="status" value="no"> No</label>
+</div>
+
+<div class="section">
+<label>Customer Received Device</label><br>
+<label><input type="radio" name="device" value="yes"> Yes</label>
+<label><input type="radio" name="device" value="no"> No</label>
+</div>
+
+<div id="result"></div>
+<div id="note"></div>
+
+<button class="copy" onclick="copyResult()">Copy</button>
+<button class="reset" onclick="resetAll()">Reset</button>
+
+</div>
+
+<script>
+
+const inputs = document.querySelectorAll('input');
+inputs.forEach(i => i.addEventListener('change', generate));
+
+function generate() {
+
+  const status = document.querySelector('input[name="status"]:checked')?.value;
+  const device = document.querySelector('input[name="device"]:checked')?.value;
+
+  const result = document.getElementById("result");
+  const note = document.getElementById("note");
+
+  if (!status || !device) return;
+
+  if (status === "yes") {
+
+    result.style.display = "block";
+    note.style.display = "block";
+
+    result.innerText =
+    "FBB Non Tech follow up -> FTTH Migration -> Check CPE SN Informed -> Create";
+
+    note.innerHTML = `
+
+<div class="step"><b>📌 Automatic TT:</b><br>
+Level 1: FBB<br>
+Level 2: indoor<br>
+Level 3: Check CPE SN<br>
+Responsible: Fulfillment Follow up<br>
+SLA: 24 H
+</div>
+
+<div class="step"><b>📌 الإجراء الأساسي:</b><br>
+في حالة وجود TT Check CPE SN يتم إبلاغ العميل بالتوجه للفرع لاستلام الجهاز ثم يتم عمل Close TT واختيار Closure = Success
+</div>
+
+<div class="step"><b>📌 تعليمات FTTH Migration:</b><br>
+• العملاء أصحاب CPE بنظام monthly fees لازم يجيبوا الجهاز + Adapter<br>
+• يقدر يحتفظ بالجهاز ويدفع رسومه<br>
+• أو يرجعه للفرع ويستلم ONT
+</div>
+
+<div class="step"><b>📌 Abnormal Status:</b><br>
+لازم تسأل العميل:
+</div>
+
+<div class="step">
+➜ هل استلم ONT؟<br><br>
+➜ لو استلم:<br>
+• متابعة Delay / Abnormal<br><br>
+➜ لو ما استلمش:<br>
+• يتم توجيهه للفرع
+</div>
+
+<div class="step"><b>📌 SR المطلوب:</b><br>
+FBB Non Tech follow up -> FTTH Migration -> Check CPE SN Informed -> Create
+</div>
+
+`;
+  }
+
+  else {
+    result.style.display = "block";
+    result.innerText = "No action required";
+    note.style.display = "none";
+  }
+}
+
+function copyResult() {
+  const text = document.getElementById("result").innerText;
+  navigator.clipboard.writeText(text);
+  alert("Copied!");
+}
+
+function resetAll() {
+  document.querySelectorAll('input').forEach(i => i.checked = false);
+  document.getElementById("result").style.display = "none";
+  document.getElementById("note").style.display = "none";
+}
+
+</script>
+
+</body>
+</html>

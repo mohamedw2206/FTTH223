@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Survey SR Tool - FINAL</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f2f2f2;
+  padding: 20px;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+}
+
+.sr-container {
+  background: #e9e9e9;
+  padding: 12px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.highlight {
+  background: yellow;
+  padding: 4px 8px;
+  font-weight: bold;
+}
+
+button {
+  padding: 6px 12px;
+  border: none;
+  background: #6c35a5;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.section {
+  margin-top: 20px;
+  background: white;
+  padding: 15px;
+  border-radius: 6px;
+}
+
+.note {
+  margin-top: 20px;
+  background: #fff3a0;
+  padding: 10px;
+  border-radius: 5px;
+  white-space: pre-line;
+}
+
+.alert {
+  background: #ffcccc;
+  color: red;
+  padding: 10px;
+  margin-top: 15px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="sr-container">
+    <strong>SR :</strong>
+    <span id="srText" class="highlight"></span>
+    <button onclick="copySR()">Copy 📋</button>
+  </div>
+
+  <div class="section">
+
+    <p><b>Survey Completed?</b></p>
+    <label><input type="radio" name="survey" value="yes"> YES</label>
+    <label><input type="radio" name="survey" value="no"> NO</label>
+
+    <p><b>Error: Get FTTH Path API Failed?</b></p>
+    <label><input type="radio" name="api" value="yes"> YES</label>
+    <label><input type="radio" name="api" value="no"> NO</label>
+
+    <p><b>هل تم تجاوز SLA (5 Days)؟</b></p>
+    <label><input type="radio" name="sla" value="yes"> YES</label>
+    <label><input type="radio" name="sla" value="no"> NO</label>
+
+    <p><b>هل حصل تأخير في التنفيذ؟</b></p>
+    <label><input type="radio" name="delay" value="yes"> YES</label>
+    <label><input type="radio" name="delay" value="no"> NO</label>
+
+  </div>
+
+  <div class="note" id="noteBox" style="display:none;"></div>
+  <div id="alertBox" class="alert" style="display:none;"></div>
+
+</div>
+
+<script>
+const inputs = document.querySelectorAll('input');
+inputs.forEach(i => i.addEventListener('change', generateSR));
+
+function generateSR() {
+  const survey = document.querySelector('input[name="survey"]:checked')?.value;
+  const api = document.querySelector('input[name="api"]:checked')?.value;
+  const sla = document.querySelector('input[name="sla"]:checked')?.value;
+  const delay = document.querySelector('input[name="delay"]:checked')?.value;
+
+  const srText = document.getElementById('srText');
+  const noteBox = document.getElementById('noteBox');
+  const alertBox = document.getElementById('alertBox');
+
+  if (!survey || !api || !sla || !delay) return;
+
+  let message = '';
+  let note = '';
+  let alert = '';
+
+  if (delay === 'yes') {
+    message = 'BB Non-Technical Complaint -> Migration - Installation -> FO-Fiber - Delay -> Create';
+
+    note = '📌 Issue: Delay in FTTH Installation\n\n📩 Action Required:\nActivation Follow Up\n\n⏱️ SLA: 4 Hours\n\n📌 Status:\nWaiting for action - Activation Team';
+  }
+
+  else if (sla === 'yes' && survey !== 'yes') {
+    message = 'TT Required → FTTH Survey Delay';
+
+    alert = '⚠️ SLA تم تجاوزها (5 Days)\nيجب إنشاء TT فوراً والمتابعة مع الفريق المختص';
+  }
+
+  else if (api === 'yes') {
+    message = 'FTTH Migration Issue -> No Free Port / API Failed';
+
+    note = '📌 Error: Get FTTH Path API Failed\n📌 يتم اعتبارها No Free Port\n\n📩 يتم إبلاغ العميل:\nلا توجد أماكن متاحة حالياً وسيتم المتابعة عند توفر إمكانية التركيب\n\n⏱️ SLA: No estimated time';
+  }
+
+  else if (survey === 'yes') {
+
+    if (sla === 'no') {
+      message = 'FBB Non Tech follow up -> FTTH Migration -> Survey within SLA -> Create (خلال)';
+    } else {
+      message = 'FBB Non Tech follow up -> FTTH Migration -> Survey After SLA -> Create (بعد)';
+    }
+
+    note = '📌 المرحلة: Survey\n📌 الفني من FO-Fiber بيزور العميل\n\n🔹 يتم:\n- التأكد من جاهزية المكان\n- مد كابل الفايبر لحد باب الشقة\n\n⏱️ SLA: 5 Days';
+  }
+
+  else {
+    message = 'Pending Survey Follow Up';
+  }
+
+  srText.innerText = message;
+
+  noteBox.style.display = note ? 'block' : 'none';
+  noteBox.innerText = note;
+
+  alertBox.style.display = alert ? 'block' : 'none';
+  alertBox.innerText = alert;
+}
+
+function copySR() {
+  const text = document.getElementById('srText').innerText;
+  if (!text) return;
+
+  navigator.clipboard.writeText(text);
+  alert("Copied ✅");
+}
+</script>
+
+</body>
+</html>

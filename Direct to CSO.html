@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>Direct to CSO - عربي</title>
+
+<style>
+body {font-family: Arial; background:#f5f5f5; padding:20px; direction:rtl;}
+.container {background:#fff; padding:20px; border-radius:10px; max-width:850px; margin:auto;}
+
+.section {margin-bottom:15px;}
+
+#result {
+  margin-top:20px;
+  padding:15px;
+  border-radius:8px;
+  display:none;
+  font-weight:bold;
+  background:#fff3cd;
+}
+
+#note {
+  margin-top:15px;
+  padding:15px;
+  border-radius:10px;
+  background:#eef7ff;
+  display:none;
+}
+
+.step {
+  background:#fff;
+  margin-bottom:10px;
+  padding:10px;
+  border-right:4px solid #007bff;
+}
+
+button {margin-top:10px; padding:8px 12px; border:none; border-radius:6px; cursor:pointer;}
+.copy {background:green; color:white;}
+.reset {background:red; color:white;}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h3>Direct to CSO</h3>
+
+<div class="section">
+<label>هل الأوردر في مرحلة Direct to CSO؟</label><br>
+<label><input type="radio" name="cso" value="yes"> نعم</label>
+<label><input type="radio" name="cso" value="no"> لا</label>
+</div>
+
+<div id="result"></div>
+<div id="note"></div>
+
+<button class="copy" onclick="copyResult()">نسخ</button>
+<button class="reset" onclick="resetAll()">إعادة تعيين</button>
+
+</div>
+
+<script>
+
+const inputs = document.querySelectorAll('input');
+inputs.forEach(i => i.addEventListener('change', generate));
+
+function generate() {
+
+  const cso = document.querySelector('input[name="cso"]:checked')?.value;
+
+  const result = document.getElementById("result");
+  const note = document.getElementById("note");
+
+  if (!cso) {
+    result.style.display = "none";
+    note.style.display = "none";
+    return;
+  }
+
+  if (cso === "yes") {
+
+    result.style.display = "block";
+    note.style.display = "block";
+
+    result.innerText =
+    "FBB Non Tech follow up -> FTTH Migration -> Direct to CSO - CST Informed Create";
+
+    note.innerHTML = `
+
+<div class="step"><b>📌 الوصف:</b><br>
+في حالة إن توصيل الـ CPE يكون Indoor، الأوردر بيوصل للمرحلة دي بعد الـ Survey
+</div>
+
+<div class="step"><b>📌 التذكرة التلقائية:</b><br>
+FBB → indoor Migration → Direct to CSO
+</div>
+
+<div class="step"><b>⚠️ ملحوظة مهمة جدًا:</b><br>
+❌ ممنوع قفل الـ TT لأي سبب<br>
+✔ يتم فقط إضافة Comment عليها
+</div>
+
+<div class="step"><b>📊 SLA:</b><br>
+24 ساعة (متابعة من Activation Team)
+</div>
+
+<div class="step"><b>📞 دور فريق Activation:</b><br>
+إبلاغ العميل بالتوجه للفرع (CSO) لاستلام الجهاز
+</div>
+
+<div class="step"><b>👨‍💼 دور الـ CCA:</b><br>
+إبلاغ العميل بضرورة التوجه للفرع لاستلام الجهاز
+</div>
+
+<div class="step"><b>📌 الـ SR:</b><br>
+FBB Non Tech follow up -> FTTH Migration -> Direct to CSO - CST Informed Create
+</div>
+
+<div class="step"><b>📌 تعليمات FTTH Migration:</b><br>
+• العميل الذي لديه CPE بنظام رسوم شهرية لازم يحضر الجهاز + Adapter<br>
+• يمكنه الاحتفاظ بالجهاز ودفع الرسوم<br>
+• أو إعادة الجهاز للفرع واستلام ONT
+</div>
+
+`;
+  }
+
+  else {
+    result.style.display = "block";
+    result.innerText = "لا يوجد إجراء مطلوب";
+    note.style.display = "none";
+  }
+}
+
+function copyResult() {
+  const text = document.getElementById("result").innerText;
+  navigator.clipboard.writeText(text);
+  alert("تم النسخ ✅");
+}
+
+function resetAll() {
+  document.querySelectorAll('input').forEach(i => i.checked = false);
+  document.getElementById("result").style.display = "none";
+  document.getElementById("note").style.display = "none";
+}
+
+</script>
+
+</body>
+</html>

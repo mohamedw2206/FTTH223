@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FTTH Ticket Tool - FINAL</title>
+
+<style>
+body { font-family: Arial; background:#f5f5f5; padding:20px; }
+.container { background:#fff; padding:20px; border-radius:8px; max-width:900px; margin:auto; }
+.section { margin-bottom:15px; }
+.options label { margin-right:15px; }
+
+#srBox {
+  margin-top:20px;
+  padding:15px;
+  border:2px dashed #333;
+  background:#fff3cd;
+  display:none;
+  font-weight:bold;
+}
+
+#noteBox {
+  margin-top:20px;
+  padding:15px;
+  border:1px solid #ccc;
+  background:#eef7ff;
+  display:none;
+  line-height:1.7;
+}
+
+button {
+  padding:10px 15px;
+  border:none;
+  background:#007bff;
+  color:#fff;
+  border-radius:5px;
+  cursor:pointer;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h2>FTTH Ticket Decision Tool</h2>
+
+<div class="section">
+<label>Survey Status</label>
+<div class="options">
+<label><input type="radio" name="survey" value="grace"> Grace Period</label>
+<label><input type="radio" name="survey" value="none"> Normal</label>
+</div>
+</div>
+
+<div class="section">
+<label>Customer Problem</label>
+<div class="options">
+<label><input type="radio" name="problem" value="yes"> Yes</label>
+<label><input type="radio" name="problem" value="no"> No</label>
+</div>
+</div>
+
+<div class="section">
+<label>Customer Reachable</label>
+<div class="options">
+<label><input type="radio" name="reachable" value="yes"> Yes</label>
+<label><input type="radio" name="reachable" value="no"> No</label>
+</div>
+</div>
+
+<div class="section">
+<label>Problem Resolved After Visit</label>
+<div class="options">
+<label><input type="radio" name="resolved" value="yes"> Yes</label>
+<label><input type="radio" name="resolved" value="no"> No</label>
+</div>
+</div>
+
+<div class="section">
+<label>هل حصل تأخير؟</label>
+<div class="options">
+<label><input type="radio" name="delay" value="yes"> Yes</label>
+<label><input type="radio" name="delay" value="no"> No</label>
+</div>
+</div>
+
+<div class="section">
+<label>هل بعد SLA؟</label>
+<div class="options">
+<label><input type="radio" name="sla" value="within"> Within</label>
+<label><input type="radio" name="sla" value="after"> After</label>
+</div>
+</div>
+
+<button onclick="generateSR()">Generate Result</button>
+
+<div id="srBox"></div>
+<div id="noteBox"></div>
+
+</div>
+
+<script>
+function generateSR() {
+
+  const survey = document.querySelector('input[name="survey"]:checked')?.value;
+  const problem = document.querySelector('input[name="problem"]:checked')?.value;
+  const reachable = document.querySelector('input[name="reachable"]:checked')?.value;
+  const resolved = document.querySelector('input[name="resolved"]:checked')?.value;
+  const delay = document.querySelector('input[name="delay"]:checked')?.value;
+  const sla = document.querySelector('input[name="sla"]:checked')?.value;
+
+  const srBox = document.getElementById('srBox');
+  const noteBox = document.getElementById('noteBox');
+
+  if (!survey || !problem || !reachable || !resolved || !delay || !sla) {
+    srBox.style.display = 'block';
+    noteBox.style.display = 'none';
+    srBox.innerText = 'اختار كل الاختيارات الأول';
+    return;
+  }
+
+  // 🔴 Delay Case
+  if (delay === 'yes') {
+    srBox.style.display = 'block';
+    noteBox.style.display = 'block';
+
+    srBox.innerText =
+    'BB Non-Technical Complaint -> Migration - Installation -> FO-Fiber - Delay -> Create';
+
+    noteBox.innerHTML = `
+    <b>📌 Issue:</b> Delay in FTTH Installation<br><br>
+    <b>📩 Action:</b><br>
+    Activation Follow Up<br><br>
+    <b>⏱️ SLA:</b> 4 Hours<br><br>
+    <b>📌 Status:</b><br>
+    Waiting for action - Activation Team
+    `;
+    return;
+  }
+
+  // 🟢 Grace Period Logic
+  if (survey === 'grace' && problem === 'yes') {
+
+    srBox.style.display = 'block';
+    noteBox.style.display = 'block';
+
+    if (sla === 'after') {
+      srBox.innerText =
+      'SR: FBB Non Tech follow up -> FTTH Migration -> Survey Grace Period After SLA - CST Informed Create (بعد)';
+    } else {
+      srBox.innerText =
+      'SR: FBB Non Tech follow up -> FTTH Migration -> Survey Grace Period - CST Informed Create (خلال)';
+    }
+
+    noteBox.innerHTML = `
+    <b>📌 التفاصيل:</b><br><br>
+    Order في مرحلة Survey Grace Period بسبب مشكلة عند العميل<br><br>
+
+    <b>📞 Activation Team:</b><br>
+    متابعة خلال 24 ساعة<br><br>
+
+    <b>📌 ملاحظات:</b><br>
+    مراجعة OM Comments لمعرفة سبب المشكلة
+    `;
+  }
+
+  else if (resolved === 'yes') {
+    srBox.style.display = 'block';
+    noteBox.style.display = 'none';
+    srBox.innerText =
+    'Close TT with success and continue order normally';
+  }
+
+  else if (reachable === 'no') {
+    srBox.style.display = 'block';
+    noteBox.style.display = 'none';
+    srBox.innerText =
+    'Confirm / Update customer number before PONR';
+  }
+
+  else {
+    srBox.style.display = 'block';
+    noteBox.style.display = 'none';
+    srBox.innerText =
+    'Follow customer within 24H + Open TT';
+  }
+}
+</script>
+
+</body>
+</html>

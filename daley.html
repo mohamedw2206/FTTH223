@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tabs with Global Note</title>
+
+<style>
+body {font-family: Arial; margin:0; padding:0;}
+
+#tabs {display:flex; background:#333;}
+#tabs button {
+  flex:1;
+  padding:10px;
+  background:#444;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+}
+
+#tabs button:hover {background:#555;}
+
+#content {padding:15px;}
+
+/* GLOBAL NOTE */
+#globalNote {
+  background: #ffffff;
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+#globalNote h3 {color:#721c24;}
+#globalNote h4 {margin-top:15px;}
+
+.noteTable {
+  width:100%;
+  border-collapse: collapse;
+  margin-top:8px;
+}
+
+.noteTable th {
+  background:#343a40;
+  color:#fff;
+  padding:8px;
+  font-size:13px;
+}
+
+.noteTable td {
+  border:1px solid #ddd;
+  padding:8px;
+  font-size:13px;
+}
+
+/* Row color coding based on delay type */
+.noteTable tr.fo-delay td { background-color: #e3f2fd; } /* Fiber Delay - Blue */
+.noteTable tr.support-delay td { background-color: #e8f5e9; } /* Support Delay - Green */
+.noteTable tr.sd-delay td { background-color: #fff3e0; } /* SD Delay - Orange */
+.noteTable tr.overall-delay td { background-color: #fce4ec; } /* Overall Delay - Pink */
+
+.noteTable tr:nth-child(even) {background:#f2f2f2;}
+
+.noteHint {
+  background:#fff3cd;
+  padding:8px;
+  border-left:4px solid #ffc107;
+  margin-top:5px;
+  font-size:13px;
+}
+
+textarea {width:100%; height:120px;}
+</style>
+</head>
+
+<body>
+
+<div id="tabs">
+  <button onclick="loadTab('tab1')">Tab 1</button>
+  <button onclick="loadTab('tab2')">Tab 2</button>
+</div>
+
+<div id="content">
+
+<!-- GLOBAL NOTE TABLE -->
+<div id="globalNote">
+  <h3>⚠️ ACTIVATION FOLLOW UP RULES</h3>
+
+  <h4>Survey / Resurvey / Unreached</h4>
+  <table class="noteTable">
+    <tr><th>Level 1</th><th>Level 2</th><th>Level 3</th><th>Action</th><th>SLA</th><th>2nd WG</th></tr>
+    <tr><td>FBB Non-Technical Complaint</td><td>New FTTH - Installation</td><td>FO-Fiber - Delay</td><td>Create Activation Follow Up</td><td>4 Hours</td><td>Activation Team</td></tr>
+    <tr><td>FBB Non-Technical Complaint</td><td>Migration - Installation</td><td>FO-Fiber - Delay</td><td>Create Activation Follow Up</td><td>4 Hours</td><td>Activation Team</td></tr>
+  </table>
+
+  <h4>Home Visit Dispatch Delay</h4>
+  <table class="noteTable">
+    <tr><th>Level 1</th><th>Level 2</th><th>Level 3</th><th>Action</th><th>SLA</th><th>2nd WG</th></tr>
+    <tr><td>FBB Non-Technical Complaint</td><td>New FTTH - Installation</td><td>FTTH-Support - Delay</td><td>Create Activation Follow Up</td><td>4 Hours</td><td>Activation Team</td></tr>
+    <tr><td>FBB Non-Technical Complaint</td><td>Migration - Installation</td><td>FTTH-Support - Delay</td><td>Create Activation Follow Up</td><td>4 Hours</td><td>Activation Team</td></tr>
+  </table>
+
+  <h4>Automatic Activity / Abnormal</h4>
+  <div class="noteHint">
+    Order &gt; 1 hour in Automatic Activity & status = Executing<br>
+    ✔ Check Automatic TT or Abnormal status first
+  </div>
+
+  <table class="noteTable">
+    <tr><th>Level 1</th><th>Level 2</th><th>Level 3</th><th>Action</th><th>SLA</th><th>2nd WG</th></tr>
+    <tr><td>FBB Non-Technical Complaint</td><td>New FTTH - Installation</td><td>SD Team - Delay</td><td>Create Activation Follow Up</td><td>4 Hours</td><td>Activation Team</td></tr>
+    <tr><td>FBB Non-Technical Complaint</td><td>Migration - Installation</td><td>SD Team - Delay</td><td>Create Activation Follow Up</td><td>4 Hours</td><td>Activation Team</td></tr>
+  </table>
+
+  <h4>Overall Installation Delay</h4>
+  <table class="noteTable">
+    <tr><th>Level 1</th><th>Level 2</th><th>Level 3</th><th>Action</th><th>SLA</th><th>2nd WG</th></tr>
+    <tr><td>FBB Non-Technical Complaint</td><td>New FTTH - Installation</td><td>Over all Delay</td><td>Create Activation Follow Up</td><td>4 Hours</td><td>Activation Team</td></tr>
+    <tr><td>FBB Non-Technical Complaint</td><td>Migration - Installation</td><td>Over all Delay</td><td>Create Activation Follow Up</td><td>4 Hours</td><td>Activation Team</td></tr>
+  </table>
+
+  <h4>System Issue</h4>
+  <table class="noteTable">
+    <tr><th>Case</th><th>Action</th></tr>
+    <tr><td>Within SLA</td><td>Create</td></tr>
+    <tr><td>After SLA</td><td>Create</td></tr>
+  </table>
+</div>
+
+<textarea id="notes"></textarea>
+
+</div>
+
+<script>
+let currentTab = '';
+
+function loadTab(tab) {
+  currentTab = tab;
+  document.getElementById('notes').value = localStorage.getItem(tab) || '';
+}
+
+document.getElementById('notes').addEventListener('input', function() {
+  localStorage.setItem(currentTab, this.value);
+});
+</script>
+
+</body>
+</html>

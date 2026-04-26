@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Home Visit Grace Period - FINAL</title>
+
+<style>
+body {font-family: Arial; background:#f5f5f5; padding:20px;}
+.container {background:#fff; padding:20px; border-radius:10px; max-width:850px; margin:auto;}
+.section {margin-bottom:15px;}
+
+#result {
+  margin-top:20px;
+  padding:15px;
+  border-radius:8px;
+  display:none;
+  font-weight:bold;
+  background:#fff3cd;
+}
+
+#note {
+  margin-top:15px;
+  padding:15px;
+  border-radius:10px;
+  background:#eef7ff;
+  display:none;
+}
+
+button {margin-top:10px; padding:8px 12px; border:none; border-radius:6px; cursor:pointer;}
+.copy {background:green; color:white;}
+.reset {background:red; color:white;}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h3>Home Visit Grace Period</h3>
+
+<div class="section">
+<label>Home Visit Stage</label><br>
+<label><input type="radio" name="visit" value="yes"> Yes</label>
+<label><input type="radio" name="visit" value="no"> No</label>
+</div>
+
+<div class="section">
+<label>Customer Problem</label><br>
+<label><input type="radio" name="problem" value="yes"> Yes</label>
+<label><input type="radio" name="problem" value="no"> No</label>
+</div>
+
+<div class="section">
+<label>Problem Resolved After Visit</label><br>
+<label><input type="radio" name="resolved" value="yes"> Yes</label>
+<label><input type="radio" name="resolved" value="no"> No</label>
+</div>
+
+<div class="section">
+<label>هل تم تجاوز SLA؟</label><br>
+<label><input type="radio" name="sla" value="yes"> Yes</label>
+<label><input type="radio" name="sla" value="no"> No</label>
+</div>
+
+<div class="section">
+<label>هل حصل تأخير؟</label><br>
+<label><input type="radio" name="delay" value="yes"> Yes</label>
+<label><input type="radio" name="delay" value="no"> No</label>
+</div>
+
+<div id="result"></div>
+<div id="note"></div>
+
+<button class="copy" onclick="copyResult()">Copy</button>
+<button class="reset" onclick="resetAll()">Reset</button>
+
+</div>
+
+<script>
+
+const inputs = document.querySelectorAll('input');
+inputs.forEach(i => i.addEventListener('change', generate));
+
+function generate() {
+
+  const visit = document.querySelector('input[name="visit"]:checked')?.value;
+  const problem = document.querySelector('input[name="problem"]:checked')?.value;
+  const resolved = document.querySelector('input[name="resolved"]:checked')?.value;
+  const sla = document.querySelector('input[name="sla"]:checked')?.value;
+  const delay = document.querySelector('input[name="delay"]:checked')?.value;
+
+  const result = document.getElementById("result");
+  const note = document.getElementById("note");
+
+  if (!visit || !problem || !resolved || !sla || !delay) return;
+
+  let message = "";
+  let noteText = "";
+
+  // 🔴 Delay Priority
+  if (delay === "yes") {
+    message = "BB Non-Technical Complaint -> Migration - Installation -> FO-Fiber - Delay -> Create";
+
+    noteText = `📌 Delay in Home Visit
+
+📩 Action:
+Activation Follow Up
+
+⏱️ SLA: 4 Hours
+
+📌 Status:
+Waiting for action - Activation Team`;
+  }
+
+  // 🟢 Grace Period
+  else if (visit === "yes" && problem === "yes" && resolved === "no") {
+
+    if (sla === "no") {
+      message = "FBB Non Tech follow up -> FTTH Migration -> Home Visit Grace Period within SLA -> Create (خلال)";
+    } else {
+      message = "FBB Non Tech follow up -> FTTH Migration -> Home Visit Grace Period After SLA -> Create (بعد)";
+    }
+
+    noteText = `📌 Home Visit Grace Period
+
+📌 وجود مشكلة عند العميل
+
+📩 متابعة:
+Activation Team خلال 24 ساعة
+
+📊 SLA:
+24H + 7 Days Follow Up`;
+  }
+
+  // 🟢 Resolved
+  else if (resolved === "yes") {
+    message = "Close TT with success";
+
+    noteText = `✔ تم حل المشكلة
+➜ يتم غلق TT بـ Success
+➜ الـ Order يكمل طبيعي`;
+  }
+
+  else {
+    message = "No action required";
+  }
+
+  result.style.display = "block";
+  note.style.display = noteText ? "block" : "none";
+
+  result.innerText = message;
+  note.innerText = noteText;
+}
+
+function copyResult() {
+  const text = document.getElementById("result").innerText;
+  if (!text) return;
+  navigator.clipboard.writeText(text);
+  alert("Copied ✅");
+}
+
+function resetAll() {
+  document.querySelectorAll('input').forEach(i => i.checked = false);
+  document.getElementById("result").style.display = "none";
+  document.getElementById("note").style.display = "none";
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ticket Maker UI</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f5f5f5;
+  padding: 20px;
+}
+.container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 700px;
+  margin: auto;
+}
+.section {
+  margin-bottom: 20px;
+}
+.options {
+  margin-left: 20px;
+}
+#srBox {
+  margin-top: 20px;
+  padding: 15px;
+  border: 2px dashed #333;
+  display: none;
+  font-weight: bold;
+}
+.note {
+  color: gray;
+  font-size: 14px;
+  margin-top: 10px;
+  white-space: pre-line;
+}
+button {
+  margin-top: 10px;
+  padding: 10px 15px;
+  border: none;
+  background: #007bff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+button:hover {
+  background: #0056b3;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Profile -->
+  <div class="section">
+    <label>Check CST-360 Profile</label>
+    <div class="options">
+      <label><input type="radio" name="profile" value="yes"> YES</label>
+      <label><input type="radio" name="profile" value="no"> NO</label>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div class="section">
+    <label>Check Error</label>
+    <div class="options">
+      <label><input type="radio" name="error" value="yes"> YES</label>
+      <label><input type="radio" name="error" value="no"> NO</label>
+    </div>
+  </div>
+
+  <!-- Order -->
+  <div class="section">
+    <label>Check Order</label>
+    <div class="options">
+      <label><input type="radio" name="order" value="yes"> YES</label>
+      <label><input type="radio" name="order" value="no"> NO</label>
+    </div>
+  </div>
+
+  <!-- SR Output -->
+  <div id="srBox"></div>
+  <button id="copyBtn" style="display:none;">Copy SR 📋</button>
+
+</div>
+
+<script>
+const inputs = document.querySelectorAll('input');
+const copyBtn = document.getElementById('copyBtn');
+
+inputs.forEach(input => input.addEventListener('change', generateSR));
+
+function generateSR() {
+  const profile = document.querySelector('input[name="profile"]:checked')?.value;
+  const error = document.querySelector('input[name="error"]:checked')?.value;
+  const order = document.querySelector('input[name="order"]:checked')?.value;
+
+  const srBox = document.getElementById('srBox');
+
+  if (!profile || !error || !order) return;
+
+  let message = '';
+  let note = '';
+
+  // لو فيه Order
+  if (order === 'yes') {
+    message = 'Follow customer based on FTTH Migration order activity';
+
+    note = `لو موجود FTTH Migration order هنتابع مع العميل على حسب order activity
+لمعلوماتك فقط ولا يتم ابلاغ العميل بها
+كابينة الـ MSAN بيتم فصلها فعليًا.`;
+  }
+
+  // لو مفيش Order + Error
+  else if (profile === 'no' && error === 'yes') {
+    message = 'SR: FBB Non Technical Complaint – System Issue – CST360 MSAN deactivation for FTTH migration';
+
+    note = `لو مش موجود FTTH Migration order
+هيتم متابعة Abnormal Behavior Handling`;
+  }
+
+  if (message) {
+    srBox.style.display = 'block';
+    copyBtn.style.display = 'inline-block';
+
+    srBox.innerHTML = `
+      <div>${message}</div>
+      <hr>
+      <div class="note">${note}</div>
+    `;
+  } else {
+    srBox.style.display = 'none';
+    copyBtn.style.display = 'none';
+    srBox.innerHTML = '';
+  }
+}
+
+// Copy
+copyBtn.addEventListener('click', () => {
+  const text = document.getElementById('srBox').innerText;
+  navigator.clipboard.writeText(text);
+  copyBtn.innerText = "Copied ✅";
+  setTimeout(() => copyBtn.innerText = "Copy SR 📋", 1500);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Smart FTTH SR Tool</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f2f2f2;
+  padding: 20px;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+}
+
+/* SR Box */
+.sr-container {
+  background: #e9e9e9;
+  padding: 12px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.highlight {
+  background: yellow;
+  padding: 3px 6px;
+  font-weight: bold;
+}
+
+button {
+  padding: 6px 12px;
+  border: none;
+  background: #5a3d8a;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #452c6d;
+}
+
+/* Options */
+.section {
+  margin-top: 20px;
+  background: white;
+  padding: 15px;
+  border-radius: 6px;
+}
+
+.options label {
+  margin-right: 15px;
+}
+
+/* Details Box */
+#detailsBox {
+  margin-top: 20px;
+  display: none;
+  background: #fff;
+  padding: 15px;
+  border-radius: 6px;
+  white-space: pre-line;
+}
+
+/* Table */
+.table-box {
+  margin-top: 30px;
+  border: 1px solid #333;
+}
+
+.table-header {
+  display: flex;
+  background: #6c35a5;
+  color: white;
+  font-weight: bold;
+}
+
+.table-header div {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+}
+
+.table-body {
+  display: flex;
+}
+
+.table-body div {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  background: #eee;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+  <!-- SR -->
+  <div class="sr-container">
+    <strong>SR :</strong>
+    <span id="srText" class="highlight"></span>
+    <button onclick="copySR()">Copy 📋</button>
+  </div>
+
+  <!-- Details -->
+  <div id="detailsBox"></div>
+
+  <!-- Options -->
+  <div class="section">
+    <h3>Choose الحالة</h3>
+
+    <div class="options">
+      <p><b>Migration Order</b></p>
+      <label><input type="radio" name="order" value="yes"> YES</label>
+      <label><input type="radio" name="order" value="no"> NO</label>
+
+      <p><b>Customer Notified</b></p>
+      <label><input type="radio" name="notified" value="yes"> YES</label>
+      <label><input type="radio" name="notified" value="no"> NO</label>
+
+      <p><b>Error Exists</b></p>
+      <label><input type="radio" name="error" value="yes"> YES</label>
+      <label><input type="radio" name="error" value="no"> NO</label>
+    </div>
+  </div>
+
+  <!-- Automatic TT -->
+  <div class="table-box">
+    <div class="table-header">
+      <div>Automatic TT</div>
+      <div>Work Group</div>
+    </div>
+    <div class="table-body">
+      <div>Automatic TT-FV FTTH -> Technology Migration Customer Readiness -> Notification</div>
+      <div>Dummy Group</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const inputs = document.querySelectorAll('input');
+inputs.forEach(input => input.addEventListener('change', generateSR));
+
+function generateSR() {
+  const order = document.querySelector('input[name="order"]:checked')?.value;
+  const notified = document.querySelector('input[name="notified"]:checked')?.value;
+  const error = document.querySelector('input[name="error"]:checked')?.value;
+
+  const srText = document.getElementById('srText');
+  const detailsBox = document.getElementById('detailsBox');
+
+  if (!order || !notified || !error) {
+    srText.innerText = '';
+    detailsBox.style.display = 'none';
+    return;
+  }
+
+  let message = '';
+  let details = '';
+
+  // Priority 1: Order
+  if (order === 'yes') {
+    message = 'Follow customer based on FTTH Migration order activity';
+    details = 'يتم متابعة العميل بناءً على الـ order activity';
+  }
+
+  // Readiness
+  else if (notified === 'yes' && error === 'no') {
+    message = 'SR : FBB Non Tech follow up -> FTTH Migration -> Readiness - CST Informed Create';
+
+    details = `
+📌 الـ activity دى خاصة بالـ Migration Customers فقط
+📌 بتكون قبل الـ survey activity
+📌 الهدف: إبلاغ العميل إن خطوات الـ Migration هتبدأ خلال 7 أيام
+
+📩 العميل هيستقبل رسالة على رقم موبايله لإعلامه أن خطه هيتم تحويله للـ FTTH Service
+
+🔹 Automatic TT:
+Automatic TT-FV FTTH -> Technology Migration Customer Readiness -> Notification
+
+🔹 Work Group:
+Dummy Group
+
+⚠️ ملحوظة:
+غير مسموح إغلاق الـ TT بـ Not Solved Reason
+    `;
+  }
+
+  // Error
+  else if (error === 'yes') {
+    message = 'SR: System Issue in FTTH Migration Readiness Notification';
+
+    details = `
+⚠️ يوجد مشكلة في نظام الـ Readiness Notification
+يتم إنشاء SR System Issue والمتابعة
+    `;
+  }
+
+  else {
+    message = 'General Follow Up Required';
+    details = 'متابعة عامة';
+  }
+
+  srText.innerText = message;
+  detailsBox.style.display = 'block';
+  detailsBox.innerText = details;
+}
+
+// Copy
+function copySR() {
+  const text = document.getElementById('srText').innerText;
+  if (!text) return;
+
+  navigator.clipboard.writeText(text);
+  alert("Copied ✅");
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Re-Survey SR Tool - FINAL</title>
+
+<style>
+body { font-family: Arial; background:#f2f2f2; padding:20px; }
+.container { max-width:900px; margin:auto; }
+.box { background:#fff; padding:20px; border-radius:8px; }
+.highlight { background:yellow; padding:5px; font-weight:bold; }
+button { margin-top:10px; padding:8px 12px; border:none; background:#007bff; color:#fff; border-radius:5px; cursor:pointer; }
+.note { margin-top:15px; background:#fff3cd; padding:10px; border-radius:5px; display:none; white-space:pre-line; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="box">
+
+<h3>Re-Survey Decision Tool</h3>
+
+<p><b>Re-Survey Completed?</b></p>
+<label><input type="radio" name="survey" value="yes"> YES</label>
+<label><input type="radio" name="survey" value="no"> NO</label>
+
+<p><b>هل تم تجاوز SLA؟</b></p>
+<label><input type="radio" name="sla" value="yes"> YES</label>
+<label><input type="radio" name="sla" value="no"> NO</label>
+
+<p><b>هل حصل تأخير؟</b></p>
+<label><input type="radio" name="delay" value="yes"> YES</label>
+<label><input type="radio" name="delay" value="no"> NO</label>
+
+<div style="margin-top:15px;">
+<strong>SR:</strong>
+<span id="result" class="highlight"></span>
+</div>
+
+<button onclick="copyResult()">Copy</button>
+
+<div id="note" class="note"></div>
+
+</div>
+</div>
+
+<script>
+const inputs = document.querySelectorAll('input');
+inputs.forEach(i => i.addEventListener('change', generate));
+
+function generate() {
+  const survey = document.querySelector('input[name="survey"]:checked')?.value;
+  const sla = document.querySelector('input[name="sla"]:checked')?.value;
+  const delay = document.querySelector('input[name="delay"]:checked')?.value;
+
+  const result = document.getElementById("result");
+  const note = document.getElementById("note");
+
+  if (!survey || !sla || !delay) return;
+
+  let message = "";
+  let noteText = "";
+
+  // 🔴 Delay (Priority)
+  if (delay === "yes") {
+    message = "BB Non-Technical Complaint -> Migration - Installation -> FO-Fiber - Delay -> Create";
+
+    noteText = `📌 Issue: Delay in FTTH Installation  
+
+📩 Action Required:
+Activation Follow Up  
+
+⏱️ SLA: 4 Hours  
+
+📌 Status:
+Waiting for action - Activation Team`;
+
+    note.style.display = "block";
+    note.innerText = noteText;
+  }
+
+  // 🟢 Re-Survey
+  else if (survey === "yes") {
+
+    if (sla === "no") {
+      message = "FBB Non Tech follow up -> FTTH Migration -> Re-survey within SLA -> Create (خلال)";
+    } else {
+      message = "FBB Non Tech follow up -> FTTH Migration -> Re-survey After SLA -> Create (بعد)";
+    }
+
+    noteText = `📌 المرحلة: Re-Survey  
+📌 إعادة زيارة العميل من الفني  
+
+🔹 يتم:
+- إعادة التأكد من جاهزية المكان  
+- استكمال أي متطلبات ناقصة  
+
+⏱️ SLA: 5 Days`;
+
+    note.style.display = "block";
+    note.innerText = noteText;
+  }
+
+  else {
+    message = "Pending Re-Survey";
+    note.style.display = "none";
+  }
+
+  result.innerText = message;
+}
+
+function copyResult() {
+  const text = document.getElementById("result").innerText;
+  if (!text) return;
+  navigator.clipboard.writeText(text);
+  alert("Copied ✅");
+}
+</script>
+
+</body>
+</html>
